@@ -1,41 +1,37 @@
 package bridgePlayer;
 
 public class Deck {
-	
-	Card[] myDeck;
+
+	Card[] cards;
 	int lastCard;
+	private static final int deckNumberOfCards = 52;
 	
 	Deck(){
-		this.myDeck = new Card[52];
-		this.lastCard = 51;
-		String suits = "shdc";
+		this.cards = new Card[deckNumberOfCards];
+		this.lastCard = deckNumberOfCards - 1;
 		int $index = 0;
-		for( int i = 2; i <= 14; i++ ){
-			for( int j = 0; j < suits.length(); j++ ){
-				char suit = suits.charAt( j );
-				myDeck[$index] = new Card( i, suit );
+		for(int i = 2; i <= 14; i++) {  // this part of the code should be improved, talk to drodge about a clean way to do it
+			for(int j = 0; j < 4; j++) {
+				cards[$index] = new Card(j, i);
 				$index++;
 			}
 		}
 	}
-
-	void printDeck(){
-		for( int i = 0; i <= this.lastCard; i++ ){
-			this.myDeck[i].printCard();
-			System.out.print(" ");
-		}
-	}
+	
 	void shuffleDeck(){
 		for( int i = lastCard; i > 0; i-- ){
 			int swapWith = (int) (Math.random() * i);
-			Card tempCard = this.myDeck[i];
-			this.myDeck[i] = this.myDeck[swapWith];
-			this.myDeck[swapWith] = tempCard;
+			Card tempCard = this.cards[i];
+			this.cards[i] = this.cards[swapWith];
+			this.cards[swapWith] = tempCard;
 		}
 	}
-	Card dealCard(){
-		Card returnCard = this.myDeck[lastCard];
-		this.lastCard = this.lastCard - 1;
-		return returnCard;
-	}
+	Card[] dealCards(int number){
+		Card[] returnCards = new Card[number];
+		for(int i = 0; i < number; i++){
+			returnCards[i] = cards[lastCard];
+			lastCard = lastCard - 1;
+		}
+		return returnCards;
+	}	
 }

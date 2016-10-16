@@ -1,42 +1,59 @@
 package bridgePlayer;
 
 public class Board {
-	Deck myDeck;
-	boolean EWVul, NSVul;
+	boolean ewVul;
+	boolean nsVul;
+	int boardNumber;
+	Player[] player = new Player[4];
+	Deck deck;
+	int dealer;
+	Auction auction;
 	
-	Hand nHand, sHand, eHand, wHand;
-	
-	Board( boolean ewvul, boolean nsvul ){
-		
-		// setting up the deck
-		Deck myDeck = new Deck();
-		myDeck.shuffleDeck();
-		//myDeck.printDeck();
-		
-		// setting up the vulnerabilities
-		this.EWVul = ewvul;
-		this.NSVul = nsvul;
-		
-		// setting up the hands
-		nHand = new Hand();
-		sHand = new Hand();
-		eHand = new Hand();
-		wHand = new Hand();
-		for( int i = 0; i < 13; i++ ){
-			nHand.putCard( myDeck.dealCard() );
-			sHand.putCard( myDeck.dealCard() );
-			eHand.putCard( myDeck.dealCard() );
-			wHand.putCard( myDeck.dealCard() );
-		}
-		nHand.sortHand();
-		nHand.printHandPretty();
-		sHand.sortHand();
-		sHand.printHandPretty();
-		eHand.sortHand();
-		eHand.printHandPretty();
-		wHand.sortHand();
-		wHand.printHandPretty();
-		
-	}
+	// creating the array for vulnerability
+	public static final boolean[] EWVUL = {false, // dealing with index 0
+										   false, false, true,  true,
+										   false, true,  true,  false,
+										   true,  true,  false, false,
+										   true,  false, true,  false};
+	public static final boolean[] NSVUL = {false, // dealing with index 0
+									       false, true,  false, true,
+										   true,  false, true,  false,
+										   false, true,  false, true,
+										   true,  false, true,  false};
 
+	// north 0 e 1 s 2 w 3
+	public Board(int boardNumber){
+		this.boardNumber = boardNumber;
+		
+		// set dealer and vulnerability
+		dealer = (boardNumber - 1) % 4; // this is how the ACBL sets dealer, just rotates between the four
+		ewVul = EWVUL[boardNumber];
+		nsVul = NSVUL[boardNumber];
+		
+		// create deck
+		deck = new Deck();
+		deck.shuffleDeck();
+		
+		// create players
+		for(int i = 0; i <= 3; i++) {
+			player[i] = new Player(deck.dealCards(13), i);
+		}
+		// Create the Auction
+		auction = new Auction(dealer);
+	}
+	
+	public void executeAuction() {
+		
+		while(!auction.getIsAuctionOver()) {
+			System.out.println(auction.toString());
+			
+			auction.getLegalCalls();
+			boolean status = auction.acceptCall(player[auction.getCurrentBidder()].makeCall());
+			System.out.println(status);
+		}
+		
+		System.out.println(auction.toString());
+	}
+	
+	
 }
